@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="/public/build/images/favicon.ico" type="image/ico" />
+
+    <title>Gentelella Alela! | </title>
+
+    <!-- Bootstrap -->
+    <link href="/public/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="/public/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- PNotify -->
+    <link href="/public/vendors/pnotify/dist/pnotify.css" rel="stylesheet">
+    <link href="/public/vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
+    <link href="/public/vendors/pnotify/dist/pnotify.nonblock.css" rel="stylesheet">
+
+    <!-- Custom Theme Style -->
+    <link href="/public/build/css/custom.min.css" rel="stylesheet">
+</head>
+
+<body class="login">
+    <div>
+        <a class="hiddenanchor" id="signup"></a>
+        <a class="hiddenanchor" id="signin"></a>
+
+        <div class="login_wrapper">
+            <div class="animate form login_form">
+                <section class="login_content">
+                    <form data-parsley-validate id="form-login">
+                        <h1>Login</h1>
+                        <div>
+                            <input type="text" class="form-control" id="admin-phone" name="phone" placeholder="Phone" required="" />
+                        </div>
+                        <div>
+                            <input type="password" class="form-control" id="admin-password" name="password" placeholder="Password" required="" />
+                        </div>
+                        <div>
+                            <button type="submit" class="btn btn-success">Login</button>
+                        </div>
+
+                        <div class="clearfix"></div>
+
+                        <div class="separator">
+                            <div>
+                                <h1><i class="fa fa-paw"></i> Gentelella Alela!</h1>
+                                <p>©2016 All Rights Reserved. Gentelella Alela! is a Bootstrap 4 template. Privacy and
+                                    Terms</p>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="/public/vendors/jquery/dist/jquery.min.js"></script>
+    <!-- PNotify -->
+    <script src="/public/vendors/pnotify/dist/pnotify.js"></script>
+    <script src="/public/vendors/pnotify/dist/pnotify.buttons.js"></script>
+    <script src="/public/vendors/pnotify/dist/pnotify.nonblock.js"></script>
+    <!-- Parsley -->
+	<script src="/public/vendors/parsleyjs/dist/parsley.min.js"></script>
+
+    <script>
+        document.getElementById('form-login').onsubmit = function(e){
+            e.preventDefault();
+            if ($('#form-login').parsley().validate()) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/admin/login',
+                    headers: { "Content-Type": "application/json" },
+                    data: JSON.stringify({
+                        phone: document.getElementById('admin-phone').value,
+                        password: document.getElementById('admin-password').value,
+                    }),
+                    success: function (res) {
+                        window.location.href = '/admin';
+                    },
+                    error: function (res) {
+                        new PNotify({
+                            text: res.responseJSON.message,
+                            type: 'error',
+                            styling: 'bootstrap3'
+                        });
+                    }
+                });
+            }
+        };
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,83 @@
+<div class="container py-3 mt-3">
+    <div id="lesson-data">
+        
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-sm-6 offset-md-3 text-center">
+            <a href="/" class="btn btn-outline-secondary w-25">
+                <i class="fa fa-home" aria-hidden="true"></i> HOME
+            </a>
+            <button type="button" class="btn btn-outline-success w-50" onclick="next()">
+                NEXT <i class="fa fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<%- contentFor('js') %>
+<script>
+    const levelStorage = localStorage.getItem('lesson-level');
+    if ([1,2,3].includes(parseInt(levelStorage))) {
+        document.getElementById('lesson-level').value = parseInt(levelStorage);
+    }
+    document.getElementById('lesson-level').onchange = function () {
+        localStorage.setItem('lesson-level', this.value);
+    }
+</script>
+<script>
+    loadLesson();
+    function loadLesson(type) {
+        if (type === 'random') {
+            const level = document.getElementById('lesson-level').value;
+            var url = `/api/lesson/random?level=${level}`;
+        } else {
+            const pathname = location.pathname.split('/');
+            const key = pathname[pathname.length - 1];
+            var url = `/api/lesson/detail/${key}`;
+        }
+
+        $.ajax({
+            type: 'GET',
+            url: url,
+            success: function (res) {
+                const createdAt =  new Date(res.data.createdAt);
+                const now = new Date();
+
+                const days = (now.getTime() - createdAt.getTime()) / (1000 * 3600 * 24);
+
+                document.getElementById('lesson-data').innerHTML = `
+                    <div class="row text-center">
+                        <h2>${res.data.title} ${Math.floor(days) === 0 ? '<span class="fs-6 text-danger"><em>(New)</em></span>' : ''}</h2>
+                        <h6><small>${createdAt.toLocaleDateString('en-us', { year: 'numeric', month: 'long', day: 'numeric' })}</small></h6>
+                        <div>${tagLevel(res.data.level)}</div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-sm-6 offset-md-3">
+                            <audio class="w-100" id="lesson-audio" controls>
+                                <source src="/public/audio/${res.data.key}.mp3" type="audio/mpeg">
+                                Your browser does not support the audio tag.
+                            </audio>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <p>${res.data.content}</p>
+                    </div>
+                `;
+
+                backToTop();
+                history.pushState({}, 'eng23h', `/lesson/${res.data.key}`);
+            },
+            error: function (res) {
+                alert(res.responseJSON.message);
+                location.href = '/';
+            }
+        });
+    }
+
+    function next() {
+        loadLesson('random');
+    }
+</script>

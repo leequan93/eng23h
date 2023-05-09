@@ -1,0 +1,79 @@
+<div class="container mt-3">
+    <div id="items-lesson"></div>
+    <div class="row mt-3">
+        <div class="col-sm-6 offset-md-3 text-center">
+            <button type="button" class="btn btn-outline-success w-50" id="load-more">LOAD MORE</button>
+        </div>
+    </div>
+</div>
+
+<%- contentFor('js') %>
+<script>
+    const levelParams = new URLSearchParams(location.search).get('level');
+    if (levelParams === null || levelParams === '') {
+        document.getElementById('lesson-level').value = '';
+        localStorage.setItem('lesson-level', '');
+    } else if ([1,2,3].includes(parseInt(levelParams))) {
+        document.getElementById('lesson-level').value = parseInt(levelParams);
+        localStorage.setItem('lesson-level', parseInt(levelParams));
+    } else {
+        location.href = '/';
+    }
+</script>
+<script>
+    let page = 0;
+    loadMore();
+    function loadMore() {
+        const level = document.getElementById('lesson-level').value;
+
+        $.ajax({
+            type: 'GET',
+            url: `/api/lesson/list?level=${level}&page=${page + 1}`,
+            success: function (res) {
+                if (res.status === 'success') {
+                    for (item of res.data) {
+                        const createdAt =  new Date(item.createdAt);
+                        const now = new Date();
+
+                        const days = (now.getTime() - createdAt.getTime()) / (1000 * 3600 * 24);
+
+                        document.getElementById('items-lesson').innerHTML += `
+                            <div class="row item-lesson py-3" onclick="loadLesson(${item.key})">
+                                <h3>${item.title} ${Math.floor(days) === 0 ? '<span class="fs-6 text-danger"><em>(New)</em></span>' : ''}</h3>
+                                <h6><small>${createdAt.toLocaleDateString('en-us', { year: 'numeric', month: 'long', day: 'numeric' })}</small></h6>
+                                <p>${item.content.substring(0, 300)} ...</p>
+                                <div class="text-end">
+                                    ${tagLevel(item.level)}
+                                </div>
+                            </div>
+                        `;
+                    }
+                    page++;
+
+                    if (res.results < 5) {
+                        document.getElementById('load-more').style.display = 'none';
+                    }
+                }
+            },
+            error: function (res) {
+                alert(res.responseJSON.message);
+                location.href = '/';
+            }
+        });
+    }
+
+    document.getElementById('load-more').addEventListener('click', loadMore);
+
+    document.getElementById('lesson-level').onchange = function () {
+        history.pushState({}, 'eng23h', `?level=${this.value}`);
+        localStorage.setItem('lesson-level', this.value);
+        document.getElementById('items-lesson').innerHTML = '';
+        document.getElementById('load-more').style.display = '';
+        page = 0;
+        loadMore();
+    }
+
+    function loadLesson(key) {
+        location.href = `/lesson/${key}`;
+    }
+</script>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Eng23h</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="/public/favicon.png" type="image/ico" />
+    <link href="/public/vendors/bootstrap-5/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .eng23h-logo {
+            font-weight: bold;
+        }
+        .eng23h-logo a {
+            text-decoration: none;
+        }
+        .item-lesson:not(:first-child) {
+            border-top: solid #dee2e6 1px;
+        }
+        .item-lesson:hover {
+            background-color: #00000008;
+            cursor: pointer;
+        }
+        #btn-back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: none;
+        }
+        .bg-level-1 {
+            background-color: #43A047 !important;
+        }
+        .bg-level-2 {
+            background-color: #2E7D32 !important;
+        }
+        .bg-level-3 {
+            background-color: #FDD835 !important;
+        }
+        .bg-level-4 {
+            background-color: #F9A825 !important;
+        }
+        .bg-level-5 {
+            background-color: #F4511E !important;
+        }
+        .bg-level-6 {
+            background-color: #D84315 !important;
+        }
+    </style>
+</head>
+
+<body class="bg-light d-flex flex-column min-vh-100">
+    <header class="container-fluid sticky-top bg-success text-white rounded-bottom p-4">
+        <div class="row">
+            <div class="col-sm-3 text-center">
+                <h1 class="eng23h-logo">
+                    <a href="/" class="link-light">Eng23h</a>
+                </h1>
+            </div>
+            <div class="col-sm-9">
+                <select class="form-select form-select-lg rounded-2" id="lesson-level">
+                    <option value="" class="text-muted" selected>-- Select level --</option>
+                    <option value="1">Level A1 - Beginner</option>
+                    <option value="2">Level A2 - Pre-intermediate</option>
+                    <option value="3">Level B1 - Intermediate</option>
+                    <option value="4">Level B2 - Upper-Intermediate</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <main class="wrapper flex-grow-1">
+        <%- body %>
+        <!-- Back to top button -->
+        <button type="button" class="btn btn-success btn-floating btn-lg" id="btn-back-to-top">
+            <i class='fa fa-arrow-up'></i>
+        </button>
+    </main>
+
+    <footer class="container mt-5 py-4 border-top">
+        <div class="row">
+            <span class="text-muted">© 2023 eng23h, Inc</span>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="/public/vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="/public/vendors/bootstrap-5/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        //Get the button
+        let mybutton = document.getElementById("btn-back-to-top");
+
+        // When the user scrolls down 20px from the top of the document, show the button
+        window.onscroll = function () {
+            scrollFunction();
+        };
+
+        function scrollFunction() {
+            if (
+                document.body.scrollTop > 20 ||
+                document.documentElement.scrollTop > 20
+            ) {
+                mybutton.style.display = "block";
+            } else {
+                mybutton.style.display = "none";
+            }
+        }
+
+        // When the user clicks on the button, scroll to the top of the document
+        mybutton.addEventListener("click", backToTop);
+
+        function backToTop() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        }
+
+        function tagLevel(level) {
+            switch (level) {
+                case 1:
+                    level = '<span class="badge bg-level-1">Level A1 - Beginner</span>';
+                    break;
+                case 2:
+                    level = '<span class="badge bg-level-2">Level A1 - Pre-intermediate</span>';
+                    break;
+                case 3:
+                    level = '<span class="badge bg-level-3">Level B1 - Intermediate</span>';
+                    break;
+                case 4:
+                    level = '<span class="badge bg-level-4">Level B2 - Upper-Intermediate</span>';
+                    break;
+                case 5:
+                    level = '<span class="badge bg-level-5">Level C1 - Advanced</span>';
+                    break;
+                case 6:
+                    level = '<span class="badge bg-level-6">Level C2 - Mastery</span>';
+                    break;
+                default:
+                    level = '';
+                    break;
+            }
+
+            return level;
+        }
+    </script>
+    <%- js %>
+</body>
+
+</html>

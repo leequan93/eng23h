@@ -1,0 +1,259 @@
+<div class="row">
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>Lesson</h2>
+                <ul class="nav navbar-right panel_toolbox">
+                    <li>
+                        <button type="button" class="btn btn-primary" onclick="loadLesson(null)">
+                            <i class="fa fa-plus"></i>
+                            Add New
+                        </button>
+                    </li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card-box table-responsive">
+                            <table id="table-lesson" class="table table-striped table-bordered" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Key</th>
+                                        <th>Type</th>
+                                        <th>Title</th>
+                                        <th>Audio</th>
+                                        <th>Level</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true" id="modal-lesson">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form class="form-horizontal form-label-left" id="form-lesson" data-parsley-validate>
+                <div class="modal-header">
+                    <h4 class="modal-title"></h4>
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" style="display: none" id="lesson-key" >
+                    <div class="form-group row">
+                        <label class="control-label col-md-3 col-sm-3" for="lesson-type">Type <span class="required">*</span></label>
+                        <div class="col-md-9 col-sm-9">
+                            <select class="form-control" id="lesson-type" name="type" required="" >
+                                <option value="">-</option>
+                                <option value="reading">reading</option>
+                                <option value="speaking">speaking</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="control-label col-md-3 col-sm-3" for="lesson-level">Level <span class="required">*</span></label>
+                        <div class="col-md-9 col-sm-9">
+                            <select class="form-control" id="lesson-level" name="level" required="" >
+                                <option value="">-</option>
+                                <option value="1">Level A1 - Beginner</option>
+                                <option value="2">Level A1 - Pre-intermediate</option>
+                                <option value="3">Level B1 - Intermediate</option>
+                                <option value="4">Level B2 - Upper-Intermediate</option>
+                                <option value="5">Level C1 - Advanced</option>
+                                <option value="6">Level C2 - Mastery</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="control-label col-md-3 col-sm-3" for="lesson-audio">Audio <span class="required">*</span></label>
+                        <div class="col-md-9 col-sm-9">
+                            <div id="lesson-audio-now"></div>
+                            <input type="file" id="lesson-audio" name="audio" class="form-control" required="" >
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="control-label col-md-3 col-sm-3" for="lesson-title">Title <span class="required">*</span></label>
+                        <div class="col-md-9 col-sm-9">
+                            <input type="text" id="lesson-title" name="title" class="form-control" required="" >
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="control-label col-md-3 col-sm-3" for="lesson-content">Content <span class="required">*</span></label>
+                        <div class="col-md-9 col-sm-9">
+                            <textarea id="lesson-content" name="content" class="form-control" rows="15" required="" ></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="btn-delete" onclick="changeStatusLesson('delete')">Delete</button>
+                    <button type="button" class="btn btn-success" id="btn-activated" onclick="changeStatusLesson('activated')">Activated</button>
+                    <button type="button" class="btn btn-warning" id="btn-deactivate" onclick="changeStatusLesson('deactivate')">Deactivate</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- contentFor('js') %>
+<script>
+    $('#table-lesson').DataTable({
+        ajax: '/api/lesson',
+        columns: [
+            { 
+                data: 'key',
+                render: function (data, type) {
+                    return `<a href="javascript:loadLesson(${data})"> ${data} </a>`;
+                },
+            },
+            { data: 'type' },
+            { data: 'title' },
+            { 
+                data: 'key',
+                render: function (data, type) {
+                    return `<audio controls>
+                                <source src="/public/audio/${data}.mp3" type="audio/mpeg">
+                            </audio>`;
+                }
+            },
+            { 
+                data: 'level',
+                render: function (data, type) {
+                    switch (data) {
+                        case 1:
+                            return '<span class="badge bg-level-1">Level A1 - Beginner</span>';
+                        case 2:
+                            return '<span class="badge bg-level-2">Level A1 - Pre-intermediate</span>';
+                        case 3:
+                            return '<span class="badge bg-level-3">Level B1 - Intermediate</span>';
+                        case 4:
+                            return '<span class="badge bg-level-4">Level B2 - Upper-Intermediate</span>';
+                        case 5:
+                            return '<span class="badge bg-level-5">Level C1 - Advanced</span>';
+                        case 6:
+                            return '<span class="badge bg-level-6">Level C2 - Mastery</span>';
+                        default:
+                            return data;
+                    }
+                }
+            },
+            { 
+                data: 'status',
+                render: function (data, type) {
+                    return data ? '<span class="badge badge-success">Activated</span>' : '<span class="badge badge-warning">Deactivate</span>';
+                }
+            },
+        ],
+        order: [[0, 'desc']],
+    });
+
+    function loadLesson (key) {
+        // reset form
+        document.getElementById('form-lesson').reset();
+        document.getElementById('lesson-audio-now').innerHTML = '';
+        $('#form-lesson').parsley().reset();
+        document.getElementById('btn-activated').style.display = 'none';
+        document.getElementById('btn-deactivate').style.display = 'none';
+        document.getElementById('btn-delete').style.display = 'none';
+
+        if (key === null) {
+            $('#modal-lesson .modal-title').html('Add New');
+            document.getElementById('lesson-audio').setAttribute('required', '');
+            $('#modal-lesson').modal();
+        } else {
+            $('#modal-lesson .modal-title').html(`Lesson - ${key}`);
+            document.getElementById('lesson-audio').removeAttribute('required');
+            $.ajax({
+                type: 'GET',
+                url: `/api/lesson/${key}`,
+                success: function (res) {
+                    if (res.status === 'success' && res.data) {
+                        document.getElementById('lesson-key').value = res.data.key;
+                        document.getElementById('lesson-type').value = res.data.type;
+                        document.getElementById('lesson-level').value = res.data.level;
+                        document.getElementById('lesson-title').value = res.data.title;
+                        document.getElementById('lesson-content').value = res.data.content;
+
+                        var audio = document.createElement('audio');
+                        audio.setAttribute('src', `/public/audio/${res.data.key}.mp3`);
+                        audio.setAttribute('controls', 'controls');
+                        document.getElementById('lesson-audio-now').appendChild(audio);
+
+                        document.getElementById('btn-delete').style.display = 'block';
+                        if (res.data.status) {
+                            document.getElementById('btn-deactivate').style.display = 'block';
+                        } else {
+                            document.getElementById('btn-activated').style.display = 'block';
+                        }
+                        $('#modal-lesson').modal();
+                    } else {
+                        alert('error');
+                        window.location.href = '/admin/lesson';
+                    }
+                },
+                error: function (res) {
+                    alert(res.responseJSON.message);
+                    window.location.href = '/admin/lesson';
+                }
+            });
+        }
+    }
+
+    document.getElementById('form-lesson').onsubmit = function (e) {
+        e.preventDefault();
+        let key = document.getElementById('lesson-key').value;
+        let data = new FormData(this);
+
+        if ($('#form-lesson').parsley().validate()) {
+            $.ajax({
+                type: `${ !key ? 'POST' : 'PUT' }`,
+                url: `/api/lesson/${ !key ? '' : key }`,
+                processData: false,
+                contentType: false,
+                data: data,
+                success: function (res) {
+                    $('#modal-lesson').modal('hide');
+                    new PNotify({ text: 'success', type: 'success', styling: 'bootstrap3' });
+                    $('#table-lesson').DataTable().ajax.reload();
+                },
+                error: function (res) {
+                    alert(res.responseJSON.message);
+                    window.location.href = '/admin/lesson';
+                }
+            });
+        }
+    }
+
+    function changeStatusLesson(type) {
+        if (type === 'delete') {
+            var result = confirm('Want to delete?');
+            if (!result) {
+                return false;
+            }
+        }
+
+        let key = document.getElementById('lesson-key').value;
+        $.ajax({
+            type: 'PUT',
+            url: `/api/lesson/${type}/${key}`,
+            success: function (res) {
+                $('#modal-lesson').modal('hide');
+                new PNotify({ text: 'success', type: 'success', styling: 'bootstrap3' });
+                $('#table-lesson').DataTable().ajax.reload();
+            },
+            error: function (res) {
+                alert(res.responseJSON.message);
+                window.location.href = '/admin/lesson';
+            }
+        });
+    }
+</script>
