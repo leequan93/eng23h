@@ -21,7 +21,7 @@ module.exports.list = async (req, res, next) => {
                                     .limit(limit)
                                     .skip(skip)
                                     .sort({_id: -1})
-                                    .select('key type title content level createdAt');
+                                    .select('key title content level createdAt');
 
         res.status(200).json({
             status: 'success',
@@ -36,7 +36,7 @@ module.exports.list = async (req, res, next) => {
 module.exports.detail = async (req, res, next) => {
     try {
         const data = await Lesson.findOne({ key: req.params.key, status: true, delete: false })
-                                    .select('key type title content level createdAt');
+                                    .select('key title content level createdAt');
 
         if (!data) {
             const err = new Error('Lesson not found');
@@ -80,7 +80,6 @@ module.exports.random = async (req, res, next) => {
             data: data.length ? {
                 _id: data[0]._id,
                 key: data[0].key,
-                type: data[0].type,
                 title: data[0].title,
                 content: data[0].content,
                 level: data[0].level,
