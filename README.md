@@ -4,5 +4,3 @@ Create:
 
 Connect network:
 - docker network connect local eng23h-v001
-
-test
